@@ -9,6 +9,7 @@ st.markdown("""
 <style>
 .big-font {
     font-size:60px !important;
+    font-family: Akaya Telivigala;
     font-weight: bold;
     color: #c46e28;
     text-align: center;
@@ -47,18 +48,19 @@ selected_tags = []
 for tag in tags_uniques:
     if st.sidebar.checkbox(tag, key=tag):
         selected_tags.append(tag)
+    else: recettes_filtrees = recettes
 
 # Filtrer les recettes basées sur les tags sélectionnés
-recettes_filtrees = [recette for recette in recettes if any(tag in recette.get('tags', []) for tag in selected_tags)]
+recettes_filtrees = [recette for recette in recettes if all(tag in recette.get('tags', []) for tag in selected_tags)]
 
 
 # Créer des lignes avec 4 recettes chacune
-for i in range(0, len(recettes), 4):
+for i in range(0, len(recettes_filtrees), 4):
     cols = st.columns(4)  # Crée 4 colonnes
     for j in range(4):
-        if i + j < len(recettes):
+        if i + j < len(recettes_filtrees):
             with cols[j]:
-                recette = recettes[i + j]
+                recette = recettes_filtrees[i + j]
                 # Utilisation de HTML pour l'image
                 st.markdown(f"<div class='img-container'><img src='{recette['url_image']}' alt='{recette['titre']}'></div>", unsafe_allow_html=True)
                 
