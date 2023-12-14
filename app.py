@@ -47,6 +47,13 @@ for recette in recettes:
     for tag in recette.get('tags', []):
         tags_uniques.add(tag)
 
+# Barre de recherche
+mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
+
+
+# Titre pour les filtres dans la barre latérale
+st.sidebar.title("Filtres")
+
 # Créer des cases à cocher pour les tags dans la barre latérale
 selected_tags = []
 for tag in tags_uniques:
@@ -56,6 +63,17 @@ for tag in tags_uniques:
 
 # Filtrer les recettes basées sur les tags sélectionnés
 recettes_filtrees = [recette for recette in recettes if all(tag in recette.get('tags', []) for tag in selected_tags)]
+
+
+# Filtrer les recettes basées sur le mot-clé et les tags sélectionnés
+
+if mot_cle_recherche:
+    recettes_filtrees = [recette for recette in recettes_filtrees 
+                         if mot_cle_recherche.lower() in recette['titre'].lower() or 
+                            any(mot_cle_recherche.lower() in ingredient.lower() 
+                                for ingredient in recette.get('ingredients', []))]
+
+
 
 
 # Créer des lignes avec 4 recettes chacune
@@ -70,5 +88,13 @@ for i in range(0, len(recettes_filtrees), 4):
                 
                 # Titre de la recette avec style personnalisé
                 st.markdown(f"<p class='recipe-title'>{recette['titre']}</p>", unsafe_allow_html=True)
-
+                # Expanders pour les détails de la recette
+                with st.expander("Voir plus"):
+                    st.subheader("Ingrédients")
+                    st.write(recette['ingredients'])
+                    
+                    st.subheader("Matériels")
+                    st.write(recette['materiels'])
+                    st.subheader("Indications de Préparation")
+                    #st.write(recette['indications'])
                 st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
