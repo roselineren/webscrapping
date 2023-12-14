@@ -7,12 +7,19 @@ st.set_page_config(layout="wide")
 # Style personnalisé pour le titre principal et les titres des recettes
 st.markdown("""
 <style>
+
 .big-font {
     font-size:60px !important;
     font-family: Akaya Telivigala;
     font-weight: bold;
     color: #c46e28;
     text-align: center;
+}
+.recipe {
+    font-size:40px;
+    font-weight: bold;
+    font-family: Akaya Telivigala;
+    color: #c46e28;
 }
 .recipe-title {
     font-size:20px;
@@ -43,9 +50,21 @@ with open('recettes.json', 'r', encoding='UTF-8') as f:
 
 # Extraire les tags uniques
 tags_uniques = set()
+
+# Extraction et classification des tags
+tags_age_bebe = set()
+tags_allergenes_regime = set()
+tags_autres = set()
+
 for recette in recettes:
     for tag in recette.get('tags', []):
-        tags_uniques.add(tag)
+        if "mois" in tag in tag:
+            tags_age_bebe.add(tag)
+        elif "sans" in tag or "vegan" in tag or "végétarien" in tag:
+            tags_allergenes_regime.add(tag)
+        else:
+            tags_autres.add(tag)
+
 
 # Barre de recherche
 mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
@@ -53,21 +72,26 @@ mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
 # Titre pour les filtres dans la barre latérale
 st.sidebar.title("Filtres")
 
-# Option pour afficher/masquer le titre "Menu"
-afficher_menu = st.sidebar.checkbox("Afficher le titre Menu", value=True)
+st.markdown('<p class="recipe">Recettes</p>', unsafe_allow_html=True)
 
-# Afficher le titre "Menu" sur la page principale si l'option est activée
-if afficher_menu:
-    st.title("Recette")
-
-# Créer des cases à cocher pour les tags dans la barre latérale
+# Affichage des filtres de tags triés
 selected_tags = []
-for tag in tags_uniques:
+st.sidebar.subheader("Âge de Bébé")
+for tag in sorted(tags_age_bebe):
     if st.sidebar.checkbox(tag, key=tag):
         selected_tags.append(tag)
-    else: recettes_filtrees = recettes
 
-# Filtrer les recettes basées sur les tags sélectionnés
+st.sidebar.subheader("Allergènes et Régime Spécifique")
+for tag in sorted(tags_allergenes_regime):
+    if st.sidebar.checkbox(tag, key=tag):
+        selected_tags.append(tag)
+
+st.sidebar.subheader("Autres")
+for tag in sorted(tags_autres):
+    if st.sidebar.checkbox(tag, key=tag):
+        selected_tags.append(tag)
+
+# Filtrage des recettes
 recettes_filtrees = [recette for recette in recettes if all(tag in recette.get('tags', []) for tag in selected_tags)]
 
 
