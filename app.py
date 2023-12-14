@@ -98,3 +98,4 @@ for i in range(0, len(recettes_filtrees), 4):
                     st.subheader("Indications de Préparation")
                     #st.write(recette['indications'])
                 st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
+
