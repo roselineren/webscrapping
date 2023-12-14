@@ -72,3 +72,4 @@ for i in range(0, len(recettes_filtrees), 4):
                 st.markdown(f"<p class='recipe-title'>{recette['titre']}</p>", unsafe_allow_html=True)
 
                 st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
+
