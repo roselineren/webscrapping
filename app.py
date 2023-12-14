@@ -46,6 +46,7 @@ tags_uniques = set()
 for recette in recettes:
     for tag in recette.get('tags', []):
         tags_uniques.add(tag)
+print (tags_uniques)
 
 # Barre de recherche
 mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
@@ -91,7 +92,7 @@ for i in range(0, len(recettes_filtrees), 4):
                 # Expanders pour les détails de la recette
                 with st.expander("Voir plus"):
                     st.subheader("Ingrédients")
-                    st.write(recette['ingredients'])
+                    st.write( recette['ingredients']) )
                     
                     st.subheader("Matériels")
                     st.write(recette['materiel'])
