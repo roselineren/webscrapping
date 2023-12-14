@@ -15,7 +15,7 @@ st.markdown("""
     text-align: center;
 }
 .recipe-title {
-    font-size:26px;
+    font-size:20px;
     font-weight: bold;
     color: #cca995;
     text-align: center;
@@ -50,9 +50,15 @@ for recette in recettes:
 # Barre de recherche
 mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
 
-
 # Titre pour les filtres dans la barre latérale
 st.sidebar.title("Filtres")
+
+# Option pour afficher/masquer le titre "Menu"
+afficher_menu = st.sidebar.checkbox("Afficher le titre Menu", value=True)
+
+# Afficher le titre "Menu" sur la page principale si l'option est activée
+if afficher_menu:
+    st.title("Recette")
 
 # Créer des cases à cocher pour les tags dans la barre latérale
 selected_tags = []
@@ -83,19 +89,29 @@ for i in range(0, len(recettes_filtrees), 4):
         if i + j < len(recettes_filtrees):
             with cols[j]:
                 recette = recettes_filtrees[i + j]
-                # Utilisation de HTML pour l'image
-                st.markdown(f"<div class='img-container'><img src='{recette['url_image']}' alt='{recette['titre']}'></div>", unsafe_allow_html=True)
                 
-                # Titre de la recette avec style personnalisé
-                st.markdown(f"<p class='recipe-title'>{recette['titre']}</p>", unsafe_allow_html=True)
-                # Expanders pour les détails de la recette
-                with st.expander("Voir plus"):
-                    st.subheader("Ingrédients")
-                    st.write(recette['ingredients'])
+                # Créer un conteneur pour chaque recette
+                with st.container():
+                    # Utilisation de HTML pour l'image avec une hauteur maximale
+                    st.markdown(f"<div class='img-container' style='max-height: 200px; overflow:hidden'><img src='{recette['url_image']}' alt='{recette['titre']}'></div>", unsafe_allow_html=True)
                     
-                    st.subheader("Matériels")
-                    st.write(recette['materiel'])
-                    st.subheader("Indications de Préparation")
-                    st.write(recette['indication'])
-                st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
+                      
 
+                    # Conteneur pour le titre avec une hauteur fixe
+                    st.markdown(f"<div style='height: 100px;'><p class='recipe-title'>{recette['titre']}</p></div>", unsafe_allow_html=True)
+                   
+
+                    # Expanders pour les détails de la recette
+                    with st.expander("Voir plus"):
+                        st.subheader("Ingrédients")
+                        for ingredient in recette['ingredients']:
+                            st.write(ingredient)
+                        
+                        st.subheader("Matériels")
+                        for materiel in recette['materiel']:
+                            st.write(materiel)
+                        
+                        st.subheader("Indications de Préparation")
+                        st.write(recette['indication'])
+                    
+                    st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
