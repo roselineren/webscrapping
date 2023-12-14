@@ -94,8 +94,8 @@ for i in range(0, len(recettes_filtrees), 4):
                     st.write(recette['ingredients'])
                     
                     st.subheader("Matériels")
-                    st.write(recette['materiels'])
+                    st.write(recette['materiel'])
                     st.subheader("Indications de Préparation")
-                    #st.write(recette['indications'])
+                    st.write(recette['indication'])
                 st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
 
