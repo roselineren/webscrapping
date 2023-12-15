@@ -2,7 +2,7 @@ import streamlit as st
 import json
 
 # Configurer la page pour utiliser le mode large
-st.set_page_config(layout="wide", 
+st.set_page_config(page_title='Baby Recipe... YUMMY!', page_icon='logo.png', layout="wide",
                    menu_items={
          'Get Help': 'https://www.extremelycoolapp.com/help',
          'Report a bug': "https://www.extremelycoolapp.com/bug",
@@ -40,12 +40,20 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Créer trois colonnes pour le logo, le titre et un espace vide
+col1, col2, col3 = st.columns([1, 2, 1])
 
+# Placer le logo dans la première colonne
+with col1:
+    st.image('logo.png', width=150)  
 
+# Placer le titre au centre
+with col2:
+    st.markdown('<h1 style="text-align: center;">Baby Recipe... YUMMY!</h1>', unsafe_allow_html=True)
 
 
 # Titre de la page avec le style personnalisé
-st.markdown('<p class="big-font">Baby Recipe... YUMMY!</p>', unsafe_allow_html=True)
+#st.markdown('<p class="big-font">Baby Recipe... YUMMY!</p>', unsafe_allow_html=True)
 
 # Charger les données
 with open('recettes.json', 'r', encoding='UTF-8') as f:
