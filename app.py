@@ -51,8 +51,6 @@ st.markdown('<p class="big-font">Baby Recipe... YUMMY!</p>', unsafe_allow_html=T
 with open('recettes.json', 'r', encoding='UTF-8') as f:
     recettes = json.load(f)
 
-
-
 # Extraire les tags uniques
 tags_uniques = set()
 
@@ -72,6 +70,7 @@ for recette in recettes:
 
 
 #region Filtrage bare menu
+
 # Barre de recherche
 mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
 
@@ -106,9 +105,40 @@ if mot_cle_recherche:
                             any(mot_cle_recherche.lower() in ingredient.lower() 
                                 for ingredient in recette.get('ingredients', []))]
 #endregion 
+
 st.markdown('<p class="recipe">Recettes</p>', unsafe_allow_html=True)
 
-main, janvier, fevrier, mars, avril, mai, juin, juillet, aout, septembre, octobre, novembre, decembre = st.tabs(['Accueil', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'])
+# Fonction pour nettoyer le nom du produit (enlever l'article)
+def nettoyer_nom_produit(nom):
+    # Liste des articles à enlever
+    articles = ["Le ", "La ", "Les ", "L’"]
+    for article in articles:
+        if nom.startswith(article):
+            return nom[len(article):]
+    return nom
+
+def charger_fruits_du_mois(mois):
+    with open(f'{mois}_fruits.json', 'r', encoding='UTF-8') as f:
+        return json.load(f)
+    
+# Vérifier si un aliment est dans la liste des ingrédients (méthode 'contains')
+def contient_aliment(ingredients, aliment):
+    return any(aliment.lower() in ingredient.lower() for ingredient in ingredients)
+
+# Filtrer les recettes par produits de saison
+def filtrer_recettes_par_produits(recettes, produits_de_saison):
+    recettes_filtrees = []
+    for recette in recettes:
+        if any(contient_aliment(recette['ingredients'], nettoyer_nom_produit(produit)) for produit in produits_de_saison):
+            recettes_filtrees.append(recette)
+    return recettes_filtrees
+
+#main, janvier, fevrier, mars, avril, mai, juin, juillet, aout, septembre, octobre, novembre, decembre = st.tabs(['Accueil', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'])
+
+# Création des onglets pour chaque mois
+onglets_mois = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre']
+main, *onglets = st.tabs(['Accueil'] + onglets_mois)
+
 with main :
     # Créer des lignes avec 4 recettes chacune
     for i in range(0, len(recettes_filtrees), 4):
@@ -143,3 +173,42 @@ with main :
                         
                         st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
 
+for mois, onglet in zip(onglets_mois, onglets):
+    with onglet:
+        # Charger les fruits de saison pour le mois
+        fruits_de_saison = charger_fruits_du_mois(mois.lower())
+        
+        # Filtrer les recettes par ces fruits
+        recettes_filtrees = filtrer_recettes_par_produits(recettes, fruits_de_saison)
+        
+        # Afficher les recettes filtrées
+        for i in range(0, len(recettes_filtrees), 4):
+            cols = st.columns(4)
+            for j in range(4):
+                if i + j < len(recettes_filtrees):
+                    with cols[j]:
+                        recette = recettes_filtrees[i + j]
+                        # Créer un conteneur pour chaque recette
+                        with st.container():
+                            # Utilisation de HTML pour l'image avec une hauteur maximale
+                            st.markdown(f"<div class='img-container' style='max-height: 200px; overflow:hidden'><img src='{recette['url_image']}' alt='{recette['titre']}'></div>", unsafe_allow_html=True)
+
+
+                            # Conteneur pour le titre avec une hauteur fixe
+                            st.markdown(f"<div style='height: 100px;'><p class='recipe-title'>{recette['titre']}</p></div>", unsafe_allow_html=True)
+                        
+
+                            # Expanders pour les détails de la recette
+                            with st.expander("Voir plus"):
+                                st.subheader("Ingrédients")
+                                for ingredient in recette['ingredients']:
+                                    st.write(ingredient)
+                                
+                                st.subheader("Matériels")
+                                for materiel in recette['materiel']:
+                                    st.write(materiel)
+                                
+                                st.subheader("Indications de Préparation")
+                                st.write(recette['indication'])
+                            
+                            st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
