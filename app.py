@@ -74,8 +74,9 @@ for recette in recettes:
         elif "sans" in tag or "vegan" in tag or "végétarien" in tag or "avec poisson" in tag or "avec viande" in tag:
             tags_allergenes_regime.add(tag)
         else:
-            tags_autres.add(tag)
-
+            if ('Recettes' in tag or 'Gâteaux' in tag or 'Fruits' in tag or 'Biscuits' in tag ):
+                tags_autres.add(tag)
+           
 
 
 #region Filtrage bare menu
