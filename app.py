@@ -96,13 +96,11 @@ recettes_filtrees = [recette for recette in recettes if all(tag in recette.get('
 
 
 # Filtrer les recettes basées sur le mot-clé et les tags sélectionnés
-
 if mot_cle_recherche:
     recettes_filtrees = [recette for recette in recettes_filtrees 
                          if mot_cle_recherche.lower() in recette['titre'].lower() or 
                             any(mot_cle_recherche.lower() in ingredient.lower() 
                                 for ingredient in recette.get('ingredients', []))]
-
 
 
 
