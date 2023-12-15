@@ -2,7 +2,12 @@ import streamlit as st
 import json
 
 # Configurer la page pour utiliser le mode large
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", 
+                   menu_items={
+         'Get Help': 'https://www.extremelycoolapp.com/help',
+         'Report a bug': "https://www.extremelycoolapp.com/bug",
+         'About': "# This is a header. This is an *extremely* cool app!"
+     })
 
 # Style personnalisé pour le titre principal et les titres des recettes
 st.markdown("""
@@ -66,13 +71,12 @@ for recette in recettes:
             tags_autres.add(tag)
 
 
+#region Filtrage bare menu
 # Barre de recherche
 mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
 
 # Titre pour les filtres dans la barre latérale
 st.sidebar.title("Filtres")
-
-st.markdown('<p class="recipe">Recettes</p>', unsafe_allow_html=True)
 
 # Affichage des filtres de tags triés
 selected_tags = []
@@ -101,39 +105,41 @@ if mot_cle_recherche:
                          if mot_cle_recherche.lower() in recette['titre'].lower() or 
                             any(mot_cle_recherche.lower() in ingredient.lower() 
                                 for ingredient in recette.get('ingredients', []))]
+#endregion 
+st.markdown('<p class="recipe">Recettes</p>', unsafe_allow_html=True)
 
-
-
-# Créer des lignes avec 4 recettes chacune
-for i in range(0, len(recettes_filtrees), 4):
-    cols = st.columns(4)  # Crée 4 colonnes
-    for j in range(4):
-        if i + j < len(recettes_filtrees):
-            with cols[j]:
-                recette = recettes_filtrees[i + j]
-                
-                # Créer un conteneur pour chaque recette
-                with st.container():
-                    # Utilisation de HTML pour l'image avec une hauteur maximale
-                    st.markdown(f"<div class='img-container' style='max-height: 200px; overflow:hidden'><img src='{recette['url_image']}' alt='{recette['titre']}'></div>", unsafe_allow_html=True)
+main, janvier, fevrier, mars, avril, mai, juin, juillet, aout, septembre, octobre, novembre, decembre = st.tabs(['Accueil', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'])
+with main :
+    # Créer des lignes avec 4 recettes chacune
+    for i in range(0, len(recettes_filtrees), 4):
+        cols = st.columns(4)  # Crée 4 colonnes
+        for j in range(4):
+            if i + j < len(recettes_filtrees):
+                with cols[j]:
+                    recette = recettes_filtrees[i + j]
                     
-                      
+                    # Créer un conteneur pour chaque recette
+                    with st.container():
+                        # Utilisation de HTML pour l'image avec une hauteur maximale
+                        st.markdown(f"<div class='img-container' style='max-height: 200px; overflow:hidden'><img src='{recette['url_image']}' alt='{recette['titre']}'></div>", unsafe_allow_html=True)
 
-                    # Conteneur pour le titre avec une hauteur fixe
-                    st.markdown(f"<div style='height: 100px;'><p class='recipe-title'>{recette['titre']}</p></div>", unsafe_allow_html=True)
-                   
 
-                    # Expanders pour les détails de la recette
-                    with st.expander("Voir plus"):
-                        st.subheader("Ingrédients")
-                        for ingredient in recette['ingredients']:
-                            st.write(ingredient)
-                        
-                        st.subheader("Matériels")
-                        for materiel in recette['materiel']:
-                            st.write(materiel)
-                        
-                        st.subheader("Indications de Préparation")
-                        st.write(recette['indication'])
+                        # Conteneur pour le titre avec une hauteur fixe
+                        st.markdown(f"<div style='height: 100px;'><p class='recipe-title'>{recette['titre']}</p></div>", unsafe_allow_html=True)
                     
-                    st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
+
+                        # Expanders pour les détails de la recette
+                        with st.expander("Voir plus"):
+                            st.subheader("Ingrédients")
+                            for ingredient in recette['ingredients']:
+                                st.write(ingredient)
+                            
+                            st.subheader("Matériels")
+                            for materiel in recette['materiel']:
+                                st.write(materiel)
+                            
+                            st.subheader("Indications de Préparation")
+                            st.write(recette['indication'])
+                        
+                        st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
+
