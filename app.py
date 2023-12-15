@@ -63,10 +63,11 @@ for recette in recettes:
     for tag in recette.get('tags', []):
         if "mois" in tag in tag:
             tags_age_bebe.add(tag)
-        elif "sans" in tag or "vegan" in tag or "végétarien" in tag:
+        elif "sans" in tag or "vegan" in tag or "végétarien" in tag or "avec poisson" in tag or "avec viande" in tag:
             tags_allergenes_regime.add(tag)
         else:
             tags_autres.add(tag)
+
 
 
 #region Filtrage bare menu
@@ -108,6 +109,7 @@ if mot_cle_recherche:
 
 st.markdown('<p class="recipe">Recettes</p>', unsafe_allow_html=True)
 
+#region onglets page 
 # Fonction pour nettoyer le nom du produit (enlever l'article)
 def nettoyer_nom_produit(nom):
     # Liste des articles à enlever
@@ -212,3 +214,5 @@ for mois, onglet in zip(onglets_mois, onglets):
                                 st.write(recette['indication'])
                             
                             st.markdown(f"[Voir la recette]({recette['lien']})", unsafe_allow_html=True)
+
+#endregion
