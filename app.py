@@ -72,11 +72,11 @@ for recette in recettes:
 
 #region Filtrage bare menu
 
-# Barre de recherche
-mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
-
 # Titre pour les filtres dans la barre latérale
 st.sidebar.title("Filtres")
+
+# Barre de recherche
+mot_cle_recherche = st.sidebar.text_input("Rechercher une recette")
 
 # Affichage des filtres de tags triés
 selected_tags = []
