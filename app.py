@@ -188,9 +188,8 @@ for mois, onglet in zip(onglets_mois, onglets):
     with onglet:
         # Charger les fruits de saison pour le mois
         fruits_de_saison = charger_fruits_du_mois(mois.lower())
-        
         # Filtrer les recettes par ces fruits
-        recettes_filtrees = filtrer_recettes_par_produits(recettes, fruits_de_saison)
+        recettes_filtrees = filtrer_recettes_par_produits(recettes_filtrees, fruits_de_saison)
         
         # Afficher les recettes filtrées
         for i in range(0, len(recettes_filtrees), 4):
