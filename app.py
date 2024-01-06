@@ -1,5 +1,7 @@
 import streamlit as st
 import json
+import re
+import requests 
 
 # Configurer la page pour utiliser le mode large
 st.set_page_config(page_title='Baby Recipe... YUMMY!', page_icon='logo.png', layout="wide",
@@ -144,6 +146,45 @@ def filtrer_recettes_par_produits(recettes, produits_de_saison):
             recettes_filtrees.append(recette)
     return recettes_filtrees
 
+#region empreinte carbone
+def obtenir_empreinte_carbone_ingredient(ingredient):
+    url = "https://data.ademe.fr/data-fair/api/v1/datasets/agribalyse-31-detail-par-ingredient/metric_agg"
+    params = {
+        'metric': 'avg',
+        'field': 'Changement_climatique',
+        'q': ingredient
+    }
+    try:
+        reponse = requests.get(url, params=params)
+        if reponse.status_code == 200 and reponse.json():
+            data = reponse.json()
+            if 'metric' in data and data['metric'] is not None:
+                return data['metric']
+            else:
+                return 0
+    except requests.RequestException as e:
+        print(f"Erreur lors de l'appel de l'API : {e}")
+    return 0
+
+
+def nettoyer_ingredients(ingredients):
+    ingredients_nettoyes = []
+    for ingredient in ingredients:
+        # Supprimer les caractères non alphabétiques et les chiffres
+        ingredient_nettoye = re.sub(r'[^A-Za-zéèàêâôûùïüçÔÄËÏÜÇÉÈÀÊÂÛÙ ]+', '', ingredient)
+        # Supprimer les espaces supplémentaires
+        ingredient_nettoye = re.sub(r'\s+', ' ', ingredient_nettoye).strip()
+        ingredients_nettoyes.append(ingredient_nettoye)
+    return ingredients_nettoyes
+
+def calculer_empreinte_recette(recette):
+    empreinte_totale = 0
+    for ingredient in nettoyer_ingredients(recette['ingredients']):
+        empreinte = obtenir_empreinte_carbone_ingredient(ingredient)
+        empreinte_totale += empreinte
+    return empreinte_totale
+#endregion 
+
 #main, janvier, fevrier, mars, avril, mai, juin, juillet, aout, septembre, octobre, novembre, decembre = st.tabs(['Accueil', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'])
 
 # Création des onglets pour chaque mois
@@ -159,6 +200,7 @@ with main :
                 with cols[j]:
                     recette = recettes_filtrees[i + j]
                     
+                    
                     # Créer un conteneur pour chaque recette
                     with st.container():
                         # Utilisation de HTML pour l'image avec une hauteur maximale
@@ -168,6 +210,8 @@ with main :
                         # Conteneur pour le titre avec une hauteur fixe
                         st.markdown(f"<div style='height: 100px;'><p class='recipe-title'>{recette['titre']}</p></div>", unsafe_allow_html=True)
                     
+                        empreinte = calculer_empreinte_recette(recette)
+                        st.write(f"Empreinte carbone: {round(empreinte,2)} kgCO2eq")
 
                         # Expanders pour les détails de la recette
                         with st.expander("Voir plus"):
@@ -203,10 +247,11 @@ for mois, onglet in zip(onglets_mois, onglets):
                             # Utilisation de HTML pour l'image avec une hauteur maximale
                             st.markdown(f"<div class='img-container' style='max-height: 200px; overflow:hidden'><img src='{recette['url_image']}' alt='{recette['titre']}'></div>", unsafe_allow_html=True)
 
-
                             # Conteneur pour le titre avec une hauteur fixe
                             st.markdown(f"<div style='height: 100px;'><p class='recipe-title'>{recette['titre']}</p></div>", unsafe_allow_html=True)
-                        
+                            
+                            empreinte = calculer_empreinte_recette(recette)
+                            st.write(f"Empreinte carbone: {round(empreinte,2)} kgCO2eq")
 
                             # Expanders pour les détails de la recette
                             with st.expander("Voir plus"):
